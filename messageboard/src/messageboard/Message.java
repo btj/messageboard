@@ -15,29 +15,68 @@ public abstract class Message {
 	/**
 	 * @invar | author != null
 	 * @invar | replies != null
-	 * @invar | replies.stream().allMatch(reply -> reply != null && !reply.isDeleted && reply.parent == this)
+	 * @invar | replies.stream().allMatch(reply -> reply != null)
 	 * @invar | LogicalList.distinct(replies)
 	 */
-	final String author;
-	/**
-	 * @peerObjects
-	 */
-	final List<Reply> replies = new ArrayList<>();
-	boolean isDeleted;
+	private final String author;
+	private final List<Reply> replies = new ArrayList<>();
+	private boolean isDeleted;
 	
-	public String getAuthor() { return author; }
+	/**
+	 * @invar | getRepliesInternal().stream().allMatch(reply -> !reply.isDeletedInternal() && reply.getParentInternal() == this)
+	 * 
+	 * @immutable
+	 * @post | result != null
+	 */
+	String getAuthorInternal() { return author; }
 	/**
 	 * @creates | result
+	 * @post | result != null
+	 * @post | result.stream().allMatch(reply -> reply != null)
+	 * @post | LogicalList.distinct(result)
 	 * @peerObjects
 	 */
-	public List<Reply> getReplies() { return List.copyOf(replies); }
-	public boolean isDeleted() { return isDeleted; }
+	List<Reply> getRepliesInternal() { return List.copyOf(replies); }
+	boolean isDeletedInternal() { return isDeleted; }
 	
+	public String getAuthor() { return getAuthorInternal(); }
+	/**
+	 * @creates | result
+	 * @peerObjects (package-level)
+	 */
+	public List<Reply> getReplies() { return getRepliesInternal(); }
+	public boolean isDeleted() { return isDeletedInternal(); }
+	
+	/**
+	 * @throws IllegalArgumentException | author == null
+	 * @post | getAuthorInternal() == author
+	 * @post | getRepliesInternal().isEmpty()
+	 * @post | !isDeletedInternal()
+	 */
 	Message(String author) {
 		if (author == null)
 			throw new IllegalArgumentException("`author` is null");
 		
 		this.author = author;
+	}
+	
+	/**
+	 * @pre | reply != null
+	 * @pre | !getRepliesInternal().contains(reply)
+	 * @mutates_properties | getRepliesInternal()
+	 * @post | getRepliesInternal().equals(LogicalList.plus(old(getRepliesInternal()), reply))
+	 */
+	void addReply(Reply reply) {
+		replies.add(reply);
+	}
+
+	/**
+	 * @pre | reply != null
+	 * @mutates_properties | getRepliesInternal()
+	 * @post | getRepliesInternal().equals(LogicalList.minus(old(getRepliesInternal()), reply))
+	 */
+	void removeReply(Reply reply) {
+		replies.remove(reply);
 	}
 	
 	/**

@@ -10,17 +10,21 @@ public class Reply extends Message {
 	
 	/**
 	 * @invar | parent != null
-	 * @invar | true // Inserted to ensure the following invariant is a Phase 3 invariant. Its validity depends on the Phase 2 invariant 'replies != null' of class Message.
-	 * @invar | isDeleted || parent.replies.contains(this)
-	 * 
-	 * @peerObject
 	 */
 	final Message parent;
 	
 	/**
+	 * @invar | isDeletedInternal() || getParentInternal().getRepliesInternal().contains(this)
+	 *
+	 * @post | result != null
+	 * @peerObject (package-level)
+	 */
+	Message getParentInternal() { return parent; }
+	
+	/**
 	 * @peerObject
 	 */
-	public Message getParent() { return parent; }
+	public Message getParent() { return getParentInternal(); }
 
 	/**
 	 * @throws IllegalArgumentException | author == null
@@ -34,7 +38,7 @@ public class Reply extends Message {
 	public Reply(String author, Message parent) {
 		super(author);
 		this.parent = parent;
-		parent.replies.add(this);
+		parent.addReply(this);
 	}
 	
 	/**
@@ -46,7 +50,7 @@ public class Reply extends Message {
 	@Override
 	public void delete() {
 		super.delete();
-		parent.replies.remove(this);
+		parent.removeReply(this);
 	}
 	
 	@Override
