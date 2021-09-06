@@ -19,6 +19,9 @@ public abstract class Message {
 	 * @invar | LogicalList.distinct(replies)
 	 */
 	private final String author;
+	/**
+	 * @representationObject
+	 */
 	private final List<Reply> replies = new ArrayList<>();
 	private boolean isDeleted;
 	
@@ -39,6 +42,9 @@ public abstract class Message {
 	List<Reply> getRepliesInternal() { return List.copyOf(replies); }
 	boolean isDeletedInternal() { return isDeleted; }
 	
+	/**
+	 * @immutable
+	 */
 	public String getAuthor() { return getAuthorInternal(); }
 	/**
 	 * @creates | result
