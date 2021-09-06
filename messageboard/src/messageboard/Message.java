@@ -20,11 +20,15 @@ public abstract class Message {
 	 */
 	final String author;
 	/**
+	 * @representationObject
 	 * @peerObjects
 	 */
 	final List<Reply> replies = new ArrayList<>();
 	boolean isDeleted;
 	
+	/**
+	 * @immutable
+	 */
 	public String getAuthor() { return author; }
 	/**
 	 * @creates | result
