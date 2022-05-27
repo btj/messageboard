@@ -9,6 +9,7 @@ import logicalcollections.LogicalList;
  * @invar | getAuthor() != null
  * @invar | getReplies() != null
  * @invar | getReplies().stream().allMatch(reply -> reply != null && !reply.isDeleted() && reply.getParent() == this)
+ * @invar | LogicalList.distinct(getReplies())
  */
 public abstract class Message {
 	
